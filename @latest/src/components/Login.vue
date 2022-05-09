@@ -4,7 +4,7 @@
     <h2>Se connecter</h2>
     <form @submit.prevent="handleSubmit">
       <input
-        type="text"
+        type="email"
         name="email"
         v-model="user.email"
         placeholder="Votre email"
@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import router from "@/router";
+
 export default {
   data() {
     return {
@@ -37,13 +39,16 @@ export default {
   methods: {
     handleSubmit: async function () {
       if (this.user.email != "" && this.user.password != "") {
+        console.log(this.user);
+        console.log(this.user.password);
+
         let response = await fetch("http://localhost:90/login", {
-          method: "POST",
-          body: JSON.stringify(this.user),
           headers: {
             // Accept: "application/json",
             "Content-Type": "application/json",
           },
+          method: "POST",
+          body: JSON.stringify(this.user),
         })
           .then((r) => {
             return r.json();
@@ -52,6 +57,11 @@ export default {
             this.error = e.toString();
             console.log(e);
           });
+        if (response.userId) {
+          this.$router.push("/articles");
+        } else {
+          this.error = "votre mot de passe est incorrect";
+        }
       }
     },
     // redirect: function () {
@@ -108,5 +118,8 @@ label {
   margin: auto;
   padding: 5%;
   border-radius: 20px;
+}
+#error {
+  color: white;
 }
 </style>
